@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width">
+    <title></title>
+
+    <link href="lib/ionic/css/ionic.css" rel="stylesheet">
+    <link href="css/style.css" rel="stylesheet">
+    <link href="css/normalize.css" rel="stylesheet">
+    <link href="css/framework.css" rel="stylesheet">
+    <link href="css/ionicons.min.css" rel="stylesheet" type="text/css" />
+    <link rel="stylesheet" href="lib/angular-chart.js/dist/angular-chart.css">
+
+    <!-- IF using Sass (run gulp sass first), then uncomment below and remove the CSS includes above
+    <link href="css/ionic.app.css" rel="stylesheet">
+    -->
+
+    <!-- ionic/angularjs js -->
+    <script src="lib/ionic/js/ionic.bundle.js"></script>
+
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB16sGmIekuGIvYOfNoW9T44377IU2d2Es&sensor=true"></script>
+
+    <!-- cordova script (this will be a 404 during development) -->
+    <script src="cordova.js"></script>
+    <script src="js/webfont.js"></script>
+
+    <!-- your app's js -->
+    <script src="js/app.js"></script>
+    <script src="js/controllers.js"></script>
+    <script src="js/directives.js"></script>
+
+
+
+  </head>
+  <body ng-app="starter" ng-controller="MapCtrl">
+    <div class="w-nav navbar" data-collapse="all" data-animation="over-left" data-duration="400" data-contain="1" data-easing="ease-out-quint" data-no-scroll="1">
+
+    <ion-header-bar class="bar-stable">
+      <div class="w-nav-button navbar-button left" id="menu-button" data-ix="hide-navbar-icons">
+        <div class="navbar-button-icon home-icon">
+          <div class="bar-home-icon top"></div>
+          <div class="bar-home-icon middle"></div>
+          <div class="bar-home-icon bottom"></div>
+        </div>
+      </div>
+      <button class="button button button-positive" ng-click='goTo("/map")'>
+        Map
+      </button>
+      <!-- <select id='chartType' ng-options="chart in chart_options"> -->
+
+      <button class="button button-outline button-positive" ng-click='goTo("/energy_use")'>
+        Energy Comparisons
+      </button>
+      <button class="button button-outline button-positive" ng-click='getBuildings()'>
+        Get Buildings
+      </button>
+
+
+    </ion-header-bar>
+
+              <nav class="w-nav-menu nav-menu" role="navigation" overflow-scroll='false'>
+                <div class="nav-menu-header">
+                </div>
+
+                <a href='#/map' ng-click='getBuildings()'>
+                  <div class="w-dropdown dropdown-container" data-delay="0" >
+                    <div class="w-dropdown-toggle w-clearfix nav-menu-link dropdown">
+                      <div class="icon-list-menu">
+                        <div class="icon ion-map"></div>
+                      </div>
+                      <div class="nav-menu-titles">Map</div>
+                      <div class="nav-menu-text-right">{{ selectedBuildings() }}</div>
+
+                      <div class="w-icon-dropdown-toggle dropdown-icon"></div>
+                    </div>
+                  </div>
+                </a>
+
+                <a href='#/energy_use'>
+                  <div class="w-dropdown dropdown-container" data-delay="0">
+                    <div class="w-dropdown-toggle w-clearfix nav-menu-link dropdown">
+                      <div class="icon-list-menu">
+                        <div class="icon ion-ios-home-outline"></div>
+                      </div>
+                      <div class="nav-menu-titles">Energy Comparisons</div>
+                      <div class="nav-menu-text-right">{{ selectedBuildings() }}</div>
+
+                      <div class="w-icon-dropdown-toggle dropdown-icon"></div>
+                    </div>
+                    <nav class="w-dropdown-list drop-down-list">
+                      <a class="w-clearfix w-inline-block nav-menu-link" data-load="1" ng-repeat='building in buildings | filter:{marked:true}'>
+                        <div class="icon-list-menu">
+                          <div class="icon ion-ios-home-outline "></div>
+                        </div>
+                        <div class="nav-menu-titles" ng-click='select(building)'>{{ building.name }}</div>
+                        <input type='checkbox' ng-model='building.selected'></input>
+                      </a>
+                    </nav>
+                  </div>
+                </a>
+
+                <div class="separator-bottom"></div>
+                <div class="separator-bottom"></div>
+                <div class="separator-bottom"></div>
+              </nav>
+    </div>
+
+    <ion-nav-view ui-view></ion-nav-view>
+
+
+  <script id="map.html" type="text/ng-template">
+    <ion-view  title="Campus Map">
+      <ion-content scroll="false">
+        <map on-create="mapCreated(map)" data-tap-disabled="true"></map>
+      </ion-content>
+    </ion-view>
+  </script>          
+
+  <script id="energy_use.html" type="text/ng-template">
+    <ion-view  title="Comparisons">
+     <ion-content>   
+        <canvas id="line" class="chart chart-line" chart-data="data"
+          chart-labels="labels" chart-legend="true" chart-series="series"
+          chart-click="onClick">
+        </canvas> 
+      </ion-content> 
+    </ion-view>
+  </script>
+
+
+  <script src="lib/Chart.js/Chart.js"></script>
+  <script src="lib/angular-chart.js/dist/angular-chart.js"></script>
+
+  <script src="lib/angular-underscore-module/angular-underscore-module.js"></script>
+  <script type="text/javascript" src="js/modernizr.js"></script>
+  <script type="text/javascript" src="js/jquery.min.js"></script>
+  <script type="text/javascript" src="js/framework.js"></script>
+  <script type="text/javascript" src="js/scripts.js"></script>
+
+  </body>
+</html>
