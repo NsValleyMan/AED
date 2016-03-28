@@ -15,7 +15,7 @@ angular.module('starter.controllers', ['chart.js'])
   ]
 
   $scope.test = false;
-
+  $scope.optionSelected = 'Filter';
   $scope.chartType = 'chart chart-bar';
 
   $scope.labels = ["January", "February", "March", "April", "May", "June", "July"];
@@ -54,9 +54,48 @@ angular.module('starter.controllers', ['chart.js'])
     console.log(points, evt);
   };
 
-  $scope.getDataDailyForBuilding = function () {
+  $scope.filter = function (filterBy) {
+    switch(filterBy) {
+        case "Select All":
+            $scope.setAll(true, "all")
+            break;
+        case "Select Residence":
+            $scope.setAll(true, "residence")
+            break;
+        case "Select Academic":
+            $scope.setAll(true, "academic")
+            break;
+        case "Deselect All":
+            $scope.setAll(false, "all")
+            break;
+    }   
 
+  }
 
+  $scope.setAll = function (truth, type) {
+    for (i = 0; i < $scope.buildings.length; i++) { 
+      if (type == "all"){
+        $scope.buildings[i].selected = truth;
+      }
+      else if ($scope.buildings[i].type == type){
+        $scope.buildings[i].selected = truth;
+      }
+      else if ($scope.buildings[i].type != type){
+        $scope.buildings[i].selected = !truth;
+
+      }
+      $scope.setFlag($scope.buildings[i]);
+    }
+  }
+
+  $scope.setFlag = function (building) {
+    if (!building.selected){
+      building.googleMarker.setIcon('http://maps.google.com/mapfiles/ms/icons/red-dot.png')
+    }
+    else{
+      building.googleMarker.setIcon('http://maps.google.com/mapfiles/ms/icons/green-dot.png')
+    
+    }
   }
 
   $scope.setMarkers = function(){
@@ -90,7 +129,7 @@ angular.module('starter.controllers', ['chart.js'])
                 infowindow.setContent(compiled[0]);
                 infowindow.open($scope.map, marker);
               };
-            })(marker, content, infowindow)); 
+            })(marker, content, infowindow));                        
 
           }
           else{

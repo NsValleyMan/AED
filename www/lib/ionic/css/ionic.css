@@ -3837,7 +3837,8 @@ a.item-icon-right:after, button.item-icon-right:after, a.item-button-right:after
   padding-top: 1px;
   padding-bottom: 1px;
   padding-left: 0;
-  margin-bottom: 20px; }
+  margin-bottom: 20px;
+  background-color: blue; }
 
 .list:last-child {
   margin-bottom: 0px; }

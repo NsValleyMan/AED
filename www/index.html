@@ -20,6 +20,7 @@
     <script src="lib/ionic/js/ionic.bundle.js"></script>
 
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB16sGmIekuGIvYOfNoW9T44377IU2d2Es&sensor=true"></script>
+    <script src="lib/google-map-infobubble/src/infobubble.js"></script>
 
     <!-- cordova script (this will be a 404 during development) -->
     <script src="cordova.js"></script>
@@ -49,12 +50,12 @@
                   <div class="row">
                     <div class="col">
                       <button class="button button-full button-positive" ng-click='goTo()' ng-class=' map ? "" : "button-outline"'>
-                        Map
+                        <div class="icon ion-map"></div>
                       </button>
                     </div>
                     <div class="col">
                       <button class="button button-full button-positive" ng-click='goTo()' ng-class=' map ? "button-outline" : ""'>
-                        Energy Comparisons
+                        <div class="icon ion-stats-bars"></div>
                       </button>
                     </div>
                   </div>
@@ -62,9 +63,27 @@
 
                 </div>
                 <div class="row">
-                  <div class="col">
+                  <div class="col col-25">
+                  </div> 
+
+                  <div class="col col-50">
                       <h3><b>Buildings</b></h3><hr>
                   </div>
+                  <div class="col col-25">
+
+                      <label class="item item-input item-select">
+                        <select ng-model="optionSelected" ng-change="filter(optionSelected)">
+                          <option>Filter</option>
+                          <option>Select All</option>
+                          <option>Select Residence</option>
+                          <option>Select Academic</option>
+                          <option>Deselect All</option>
+                        </select>
+                      </label>
+
+
+                  </div>
+
                 </div>
 
                 <div class="row" ng-repeat='building in buildings'>
