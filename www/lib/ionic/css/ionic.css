@@ -3288,8 +3288,8 @@ a.subdued {
  * --------------------------------------------------
  */
 .item {
-  border-color: #ddd;
-  background-color: #fff;
+  border-color: #c8c8c8;
+  /*background-color: #fff;*/
   color: #444;
   position: relative;
   z-index: 2;

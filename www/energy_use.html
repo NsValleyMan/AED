@@ -1,5 +1,22 @@
-<!-- <h1> Energy </h1> -->
-<!-- <canvas id="line" class="chart chart-line" chart-data="data"
-  chart-labels="labels" chart-legend="true" chart-series="series"
-  chart-click="onClick" >
-</canvas>  
+<ion-header-bar class="bar bar-header bar-dark">
+  <h1 class="title">Movie details</h1>
+</ion-header-bar>
+<ion-content>
+  <div class="list card">
+ 
+    <div class="item item-avatar">
+      <img src="http://files.softicons.com/download/object-icons/movies-icons-by-pinchodesigns/png/32x32/Movie.png">
+      <h2>{{movie.original_title}}</h2>
+      <p>{{movie.release_date}}</p>
+    </div>
+ 
+    <div class="item item-image">
+      <img ng-src="http://d3gtl9l2a4fn1j.cloudfront.net/t/p/w185{{movie.poster_path}}" width="200px" />
+    </div>
+ 
+    <a class="item" href="#">
+        Average Vote: <strong>{{movie.vote_average}}</strong> (Votes: {{movie.vote_count}})
+      </a>
+ 
+  </div>
+</ion-content>

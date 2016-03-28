@@ -1,12 +1,31 @@
+
+.item-image {
+  background: #000;
+}
+ 
+.item-image img:first-child, .item-image .list-img {
+  width: 200px;
+}
+
 /* Empty. Add your own CSS if you like */
 
-map {
+/*map {
   display: block;
   width: 100%;
   height: 100%;
 }
 .scroll {
   height: 100%;
+}*/
+
+
+.scroll {
+    height: 100%;
+}
+
+#map {
+    width: 100%;
+    height: 100%;
 }
 
 
@@ -124,12 +143,15 @@ a {
 
 .navbar-button {
   position: relative;
-  width: 45px;
-  height: 45px;
+  width: 30px;
+  height: 75px;
   padding: 0px;
   color: #ccc;
   line-height: 49px;
   text-align: center;
+  top: 45vh;
+  background-color: #c8c8c8;
+
 }
 .navbar-button.left {
   float: left;
@@ -280,7 +302,7 @@ a {
 .nav-menu {
   position: absolute;
   display: none;
-  width: 92%;
+  width: 80%;
   padding-right: 22px;
   padding-left: 22px;
   background-color: white;
@@ -336,17 +358,18 @@ a {
 }
 .nav-menu-text-right {
   display: inline-block;
-  width: 22px;
+  width: 50px;
   height: 22px;
   margin-top: 14px;
   float: right;
-  border-radius: 12px;
-  background-color: #ff274a;
-  color: white;
-  font-size: 11px;
-  line-height: 22px;
-  font-weight: 400;
-  text-align: center;
+
+  /*border-radius: 12px;*/
+  /*background-color: #ff274a;*/
+  /*color: white;*/
+  /*font-size: 11px;*/
+  /*line-height: 22px;*/
+  /*font-weight: 400;*/
+  /*text-align: center;*/
 }
 .logo {
   padding-top: 20px;

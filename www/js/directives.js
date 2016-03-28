@@ -15,6 +15,7 @@ angular.module('starter.directives', [])
           preventZooming: false
 
         };
+
         var map = new google.maps.Map($element[0], mapOptions);
         
         $scope.onCreate({map: map});
