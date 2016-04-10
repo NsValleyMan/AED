@@ -1,33 +1,27 @@
-angular.module('starter.controllers', ['chart.js'])
+angular.module('starter.controllers', ['chart.js', 'underscore'])
 
 .controller('MapCtrl', function($scope, $ionicLoading, $http, $ionicSideMenuDelegate, _, $compile, $location) {
 
   $scope.buildings = []
-  $scope.map = true;
-  $scope.showMapPage = false
-  $scope.chart_options = [
-    'chart chart-bar',
-    'chart chart-doughnut',
-    'chart chart-radar',
-    'chart chart-pie',
-    'chart chart-polar-area',
-    'chart chart-base'
-  ]
+  $scope.showMap = true;
+  $scope.showLine = true;
+  $scope.showBar = false;
+  $scope.showDoughnut = false;
+  $scope.greenPin = 'http://maps.google.com/mapfiles/ms/icons/green-dot.png'
+  $scope.redPin = 'http://maps.google.com/mapfiles/ms/icons/red-dot.png'
+  $scope.yellowPin = 'http://maps.google.com/mapfiles/ms/icons/yellow-dot.png'
 
   $scope.test = false;
-  $scope.optionSelected = 'Filter';
-  $scope.chartType = 'chart chart-bar';
+  $scope.optionSelected = 'Filter Buildings';
+  $scope.chartType = 'chart chart-line';
 
   $scope.labels = ["January", "February", "March", "April", "May", "June", "July"];
-  $scope.series = ['Series A', 'Series B'];
-  $scope.data = [
-    [65, 59, 65, 65, 56, 55, 40],
-    [28, 48, 40, 19, 65, 27, 65]
-  ];
-
+  $scope.series = [];
+  $scope.data = [];
+  $scope.tmpLabels = [];
+  $scope.tmpData = [];
 
   $scope.initialize = function (){
-
 
     var mapOptions = {
       center: new google.maps.LatLng(45.088038, -64.366088),
@@ -38,9 +32,7 @@ angular.module('starter.controllers', ['chart.js'])
     };
 
     $scope.map = new google.maps.Map(document.getElementById("map"), mapOptions);
-  
     $scope.getBuildings();
-
   }
 
   if (document.readyState === "complete") {
@@ -69,7 +61,28 @@ angular.module('starter.controllers', ['chart.js'])
             $scope.setAll(false, "all")
             break;
     }   
+  }
 
+  $scope.setChartType = function (type) {
+    // doughnut removed from user options due to incapatibility
+    switch(type) {
+        case "chart chart-bar":
+          $scope.showLine = false;
+          $scope.showBar = true;
+          $scope.showDoughnut = false;
+          break;
+        case "chart chart-line":
+          $scope.showLine = true;
+          $scope.showBar = false;
+          $scope.showDoughnut = false;
+          break;
+            
+        case "chart chart-doughnut":
+          $scope.showLine = false;
+          $scope.showBar = false;
+          $scope.showDoughnut = true;
+          break;
+    } 
   }
 
   $scope.setAll = function (truth, type) {
@@ -84,75 +97,160 @@ angular.module('starter.controllers', ['chart.js'])
         $scope.buildings[i].selected = !truth;
 
       }
+
+      $scope.selectFromAll($scope.buildings[i]);
       $scope.setFlag($scope.buildings[i]);
     }
   }
 
-  $scope.setFlag = function (building) {
-    if (!building.selected){
-      building.googleMarker.setIcon('http://maps.google.com/mapfiles/ms/icons/red-dot.png')
+  $scope.setSeries = function () {
+
+    var selected = _.reject($scope.buildings, function(b){ return !b.selected; });
+    console.log('set Series: ', selected)
+    $scope.series = _.pluck(selected, "code");
+    console.log('codes: ', $scope.series)
+
+    $scope.labels = $scope.tmpLabels;
+    $scope.data = [];
+    console.log('labels', $scope.tmpLabels);
+
+    for (i = 0; i < $scope.buildings.length; i++) { 
+
+      if ($scope.buildings[i].selected){
+        $scope.data.push($scope.tmpData[i]);
+      }
     }
-    else{
-      building.googleMarker.setIcon('http://maps.google.com/mapfiles/ms/icons/green-dot.png')
+
+  
+  }
+
+  $scope.setFlag = function (building) {
+    if (!building.selected && building.selectable){
+      building.googleMarker.setIcon($scope.redPin)
+    }
+    else if (building.selectable){
+      building.googleMarker.setIcon($scope.greenPin)
     
     }
   }
 
   $scope.setMarkers = function(){
-      for (i = 0; i < $scope.buildings.length; i++) { 
-          var lat = $scope.buildings[i].location.latitude
-          var lng = $scope.buildings[i].location.longitude
-          if (lat != "" && lng != ""){
-            $scope.buildings[i].marked = true;
-            $scope.buildings[i].selected = false;
 
-            var latLng = new google.maps.LatLng(lat, lng);
-            var marker = new google.maps.Marker({
-                map: $scope.map,
-                animation: google.maps.Animation.DROP,
-                position: latLng
-            }); 
-            marker.setIcon('http://maps.google.com/mapfiles/ms/icons/red-dot.png')
-            var infowindow = new google.maps.InfoWindow();
+    for (i = 0; i < $scope.buildings.length; i++) { 
+        var lat = $scope.buildings[i].location.latitude
+        var lng = $scope.buildings[i].location.longitude
+        if (lat != "" && lng != ""){
+          $scope.buildings[i].marked = true;
+          $scope.buildings[i].selected = false;
 
-            var content = '<div><b>' + $scope.buildings[i].name + '</b>  <small>(' + $scope.buildings[i].code + ')</small> <input ng-model="buildings[' + i + '].selected" type="checkbox" ng-click="select(buildings[' + i + '])"></input><br>' + 
-                          '<b>Profile: </b>' + $scope.buildings[i].profile + '<br>' + 
-                          '<b>Built: </b>' + $scope.buildings[i].built + '<b> Renovated: </b>' + $scope.buildings[i].renovated + '<br>' +
-                          '<b>Size: </b>' + $scope.buildings[i].size + ' sqft.' +
-                          '</div>';
-
-            google.maps.event.addListener(marker,'click', (function(marker,content,infowindow){ 
-              return function() {
-                console.log('=====', content)
-                var compiled = $compile(content)($scope);
-                $scope.$apply();
-                infowindow.setContent(compiled[0]);
-                infowindow.open($scope.map, marker);
-              };
-            })(marker, content, infowindow));                        
-
+          var latLng = new google.maps.LatLng(lat, lng);
+          var marker = new google.maps.Marker({
+              map: $scope.map,
+              animation: google.maps.Animation.DROP,
+              position: latLng
+          }); 
+          if ($scope.buildings[i].available == "inActive"){
+            marker.setIcon($scope.yellowPin)
+            $scope.buildings[i].selectable = false;
+          }else{
+            marker.setIcon($scope.redPin)
+            $scope.buildings[i].selectable = true;
           }
-          else{
-            $scope.buildings[i].marked = false;
+          var infowindow = new google.maps.InfoWindow();
 
-          }
+          var content = '<div><b>' + $scope.buildings[i].name + '</b>  <small>(' + $scope.buildings[i].code + ')</small> <input ng-if="buildings[' + i + '].selectable" ng-model="buildings[' + i + '].selected" type="checkbox" ng-click="select(buildings[' + i + '])"></input><br>' + 
+                        '<b>Profile: </b>' + $scope.buildings[i].profile + '<br>' + 
+                        '<b>Built: </b>' + $scope.buildings[i].built + '<b> Renovated: </b>' + $scope.buildings[i].renovated + '<br>' +
+                        '<b>Size: </b>' + $scope.buildings[i].size + ' sqft.' +
+                        '</div>';
 
-          $scope.buildings[i].googleMarker = marker;
-      }
+          google.maps.event.addListener(marker,'click', (function(marker,content,infowindow){ 
+            return function() {
+              console.log('=====', content)
+              var compiled = $compile(content)($scope);
+              $scope.$apply();
+              infowindow.setContent(compiled[0]);
+              infowindow.open($scope.map, marker);
+            };
+          })(marker, content, infowindow));                                    
+
+        }
+        else{
+          $scope.buildings[i].marked = false;
+
+        }
+        $scope.getDataHourly($scope.buildings[i])
+        $scope.buildings[i].googleMarker = marker;
+
+        // $scope.buildings[i].buildingData = [];
+    }
+
+
+
   }
 
+  $scope.getDataHourly = function (building) {
+    var code = building.code;
+    var today = new Date();
+    var dd = today.getDate(); 
+    var mm = today.getMonth() + 1; 
+    var yyyy = today.getFullYear(); 
+    if(dd<10){
+        dd='0'+dd
+    } 
+    if(mm<10){
+        mm='0'+mm
+    } 
 
+    var day = mm + '-' + dd + '-' + yyyy;
+
+    url = "http://213.168.249.135:4000/api/dataHour/" + day + "/" + code
+
+    return $http.get(url).then(function(response) {
+        building.buildingData = response.data;
+        $scope.labels = [];
+        var energyData = [];
+        for (i = 0; i < building.buildingData.length; i++) { 
+          if (building.selectable){
+            var time = building.buildingData[i].time;
+            if ($scope.tmpLabels.indexOf(time) == -1){
+              $scope.tmpLabels.push(time)
+            }
+            energyData.push(building.buildingData[i].value)
+          }
+        }
+        if (building.selectable){
+          $scope.tmpData.push(energyData);
+        }
+    });
+  }
+
+  $scope.getCampusConsumption = function (code) {
+    url = "http://213.168.249.135:4000/api/campusConsumption/"
+
+    return $http.get(url).then(function(response) {
+        $scope.totalCampusConsumption = response.data;
+                // Create the legend and display on the map
+        var legend = document.createElement('div');
+        legend.id = 'legend';
+        var content = [];
+        content.push('<h4>Total Usage</h4>');
+        content.push('<p>' + $scope.totalCampusConsumption + ' Kwh used today</p>');
+        content.push('<h4>Pins</h4>');
+        content.push('<img src="' + $scope.greenPin + '">' + '<p><b> Selected</b></p>');
+        content.push('<img src="' + $scope.redPin + '">' + '<p><b> Unselected</b></p>');
+        content.push('<img src="' + $scope.yellowPin + '">' + '<p><b> No Data</b></p>');
+        legend.innerHTML = content.join('');
+        legend.index = 1;
+        $scope.map.controls[google.maps.ControlPosition.RIGHT_BOTTOM].push(legend);
+    });
+  }
 
   $scope.getBuildings = function(){
     return $http.get("http://213.168.249.135:4000/api/getBuildings").then(function(response) {
-        console.log('Response: ', response);
-        
-        console.log('Map: ', $scope.map);
         $scope.map.markers = []
         $scope.buildings = response.data;
-
         $scope.setMarkers();
-
     });
   }
 
@@ -162,9 +260,7 @@ angular.module('starter.controllers', ['chart.js'])
   }
 
   $scope.goTo = function (where) {
-    // $scope.getBuildings();
-    // $location.path(where);
-    $scope.map = !$scope.map
+    $scope.showMap = !$scope.showMap;
   }
 
   $scope.showMap = function () {
@@ -172,16 +268,34 @@ angular.module('starter.controllers', ['chart.js'])
   }
 
   $scope.select = function (building) {
+
+    building.selected = !building.selected
+
     if (building.selected){
-      building.googleMarker.setIcon('http://maps.google.com/mapfiles/ms/icons/red-dot.png')
+      building.googleMarker.setIcon($scope.greenPin)
     }
     else{
-      building.googleMarker.setIcon('http://maps.google.com/mapfiles/ms/icons/green-dot.png')
+      building.googleMarker.setIcon($scope.redPin)
     
     }
-    building.selected = !building.selected
+
+    $scope.setSeries()
   }
 
+  $scope.selectFromAll = function (building) {
+
+    if (building.selected){
+      building.googleMarker.setIcon($scope.redPin)
+    }
+    else{
+      building.googleMarker.setIcon($scope.greenPin)
+    
+    }
+
+    $scope.setSeries()
+  }
+
+  // returns count of building with markers
   $scope.pinnedBuildings = function () {
     var count = 0
     for (var i = 0; i < $scope.buildings.length; i++){
@@ -189,9 +303,11 @@ angular.module('starter.controllers', ['chart.js'])
         count++;
       }
     }
+
     return count
   }
-
+  
+  // returns count of buildings selected
   $scope.selectedBuildings = function () {
     var count = 0
     for (var i = 0; i < $scope.buildings.length; i++){
@@ -207,35 +323,12 @@ angular.module('starter.controllers', ['chart.js'])
   }
 
 
+
   $scope.mapCreated = function(map) {
-    console.log('================', map);
     $scope.map = map;
     $scope.setMarkers();
-    console.log('================', $scope.map);
-
   };
 
-  $scope.centerOnMe = function () {
-    console.log("Centering");
-    if (!$scope.map) {
-      return;
-    }
+  $scope.getCampusConsumption();
 
-    $scope.loading = $ionicLoading.show({
-      content: 'Getting current location...',
-      showBackdrop: false
-    });
-
-    navigator.geolocation.getCurrentPosition(function (pos) {
-      console.log('Got pos', pos);
-      $scope.map.setCenter(new google.maps.LatLng(pos.coords.latitude, pos.coords.longitude));
-      $scope.loading.hide();
-    }, function (error) {
-      alert('Unable to get location: ' + error.message);
-    });
-  };
-})
-.controller('tmpCtrl', function($scope, $ionicLoading, $http, $ionicSideMenuDelegate, _, $compile, $location) {
-
-  console.log('building in tmp: ', $scope.buildings);
 });

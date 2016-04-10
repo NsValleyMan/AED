@@ -17,7 +17,10 @@ background: -webkit-gradient(linear,left top,left bottom,color-stop(0, rgb(0,0,2
 }
 
 
-
+#legend {
+  background: white;
+  padding: 10px;
+}
 
 
 .item-image {
@@ -323,7 +326,8 @@ a {
 .nav-menu {
   position: absolute;
   display: none;
-  width: 80%;
+  width: 60%;
+  min-width: 200px;
   padding-right: 22px;
   padding-left: 22px;
   background-color: white;

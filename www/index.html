@@ -31,8 +31,6 @@
     <script src="js/controllers.js"></script>
     <script src="js/directives.js"></script>
 
-
-
   </head>
   <body ng-app="starter" ng-controller="MapCtrl">
     <div class="w-nav navbar" data-collapse="all" data-animation="over-left" data-duration="400" data-contain="1" data-easing="ease-out-quint" data-no-scroll="1">
@@ -49,45 +47,59 @@
 
                   <div class="row">
                     <div class="col">
-                      <button class="button button-full button-positive" ng-click='goTo()' ng-class=' map ? "" : "button-outline"'>
+                      <button class="button button-full button-positive" ng-click='goTo()' ng-class=' showMap ? "" : "button-outline"'>
                         <div class="icon ion-map"></div>
                       </button>
                     </div>
                     <div class="col">
-                      <button class="button button-full button-positive" ng-click='goTo()' ng-class=' map ? "button-outline" : ""'>
+                      <button class="button button-full button-positive" ng-click='goTo()' ng-class=' showMap ? "button-outline" : ""'>
                         <div class="icon ion-stats-bars"></div>
                       </button>
                     </div>
                   </div>
-                
-
                 </div>
+
+
                 <div class="row">
-                  <div class="col col-25">
-                  </div> 
-
-                  <div class="col col-50">
-                      <h3><b>Buildings</b></h3><hr>
-                  </div>
-                  <div class="col col-25">
-
-                      <label class="item item-input item-select">
+                  <div class="col col-20">
+<!--                       <label class="item item-input item-select">
                         <select ng-model="optionSelected" ng-change="filter(optionSelected)">
-                          <option>Filter</option>
+                          <option>Filter Buildings</option>
                           <option>Select All</option>
                           <option>Select Residence</option>
                           <option>Select Academic</option>
                           <option>Deselect All</option>
                         </select>
+                      </label>  -->                   
+                  </div> 
+
+<!--                   <div class="col col-20">
+                  </div> -->
+                  <div class="col col-80">
+
+                      <label class="item item-input item-select">
+                        <select ng-model="chartType" ng-change="setChartType(chartType)">
+                          <option>chart chart-line</option>
+                          <option>chart chart-bar</option>
+                          <!-- <option>chart chart-doughnut</option> -->
+                        </select>
                       </label>
-
-
                   </div>
 
+                </div>  
+
+                <div class="row">
+                  <div class="col col-25">
+                  </div> 
+                  <div class="col col-50">
+                      <h3><b>Buildings</b></h3><hr>
+                  </div>
+                  <div class="col col-25">
+                  </div>
                 </div>
 
                 <div class="row" ng-repeat='building in buildings'>
-                  <div class="col" ng-if='building.marked'>
+                  <div class="col" ng-if='building.marked && building.selectable'>
                     <div class="icon-list-menu">
                       <div class="icon ion-home"></div>
                     </div>
@@ -100,7 +112,6 @@
                   </div>
                 </div>
 
-
                 <div class="separator-bottom"></div>
                 <div class="separator-bottom"></div>
                 <div class="separator-bottom"></div>
@@ -109,26 +120,45 @@
 
     <ion-nav-view ui-view></ion-nav-view>
 
-    <ion-view  title="Comparisons" ng-show='!map'>
+    <ion-view  title="Comparisons" ng-show='!showMap'>
       <!-- Energy Comparisions -->
-      <ion-content>   
+      <ion-content ng-show='showLine'>   
         <canvas id="line" class="chart chart-line" chart-data="data"
           chart-labels="labels" chart-legend="true" chart-series="series"
           chart-click="onClick">
         </canvas> 
       </ion-content> 
+    
+      <ion-content ng-show='showBar'>   
+        <canvas id="bar" class="chart chart-bar" chart-data="data"
+          chart-labels="labels" chart-legend="true" chart-series="series"
+          chart-click="onClick">
+        </canvas> 
+      </ion-content> 
+
+      <ion-content ng-show='showDoughnut'>   
+        <canvas id="doughnut" class="chart chart-doughnut" chart-data="data"
+          chart-labels="labels" chart-legend="true" chart-series="series"
+          chart-click="onClick">
+        </canvas> 
+      </ion-content> 
+
     </ion-view>
 
     <!-- Campus Map -->
-    <ion-view  title="Campus Map" ng-show='map'>
+    <ion-view  title="Campus Map" ng-show='showMap'>
       <ion-content scroll="false">
         <div id="map" data-tap-disabled="true"></div>
       </ion-content>
     </ion-view>
 
+
+
+
   <script src="lib/Chart.js/Chart.js"></script>
   <script src="lib/angular-chart.js/dist/angular-chart.js"></script>
 
+  <script src="lib/underscore/underscore.js"></script>
   <script src="lib/angular-underscore-module/angular-underscore-module.js"></script>
   <script type="text/javascript" src="js/modernizr.js"></script>
   <script type="text/javascript" src="js/jquery.min.js"></script>
