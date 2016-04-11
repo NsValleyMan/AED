@@ -20,6 +20,7 @@ background: -webkit-gradient(linear,left top,left bottom,color-stop(0, rgb(0,0,2
 #legend {
   background: white;
   padding: 10px;
+  max-width: 200px;
 }
 
 
@@ -326,7 +327,7 @@ a {
 .nav-menu {
   position: absolute;
   display: none;
-  width: 60%;
+  width: 70%;
   min-width: 200px;
   padding-right: 22px;
   padding-left: 22px;

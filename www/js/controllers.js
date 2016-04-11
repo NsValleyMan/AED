@@ -27,7 +27,9 @@ angular.module('starter.controllers', ['chart.js', 'underscore'])
       center: new google.maps.LatLng(45.088038, -64.366088),
       zoom: 17,
       mapTypeId: google.maps.MapTypeId.ROADMAP,
-      preventZooming: false
+      preventZooming: false,
+      disableDefaultUI: true
+
 
     };
 
